@@ -1,6 +1,8 @@
 package dmillerw.circuit.client.render;
 
 import dmillerw.circuit.tile.TileScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
@@ -19,7 +21,17 @@ public class RenderTileScreen extends TileRenderer<TileScreen> {
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y - 0.5, z + 0.5);
 
-        //TODO Fix screen model. It's all upside-down n' shit
+        //TODO Less hard-coding :P
+
+        GL11.glPushMatrix();
+        GL11.glColor4f(1, 1, 1, 1);
+        GL11.glScaled(0.0625F / 2, 0.0625F / 2, 0.0625F / 2);
+        GL11.glTranslated(-2, 36, -13.75);
+        GL11.glRotated(180, 1, 0, 0);
+        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+        String s = tile.getInput(0).toJString();
+        fontRenderer.drawString(s, -fontRenderer.getStringWidth(s) / 2 + 2, 0, 0xFFFFFF);
+        GL11.glPopMatrix();
 
         GL11.glTranslated(0, 1, 0);
         switch (tile.side) {
