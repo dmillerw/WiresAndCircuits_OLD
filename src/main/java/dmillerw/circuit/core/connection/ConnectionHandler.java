@@ -3,7 +3,6 @@ package dmillerw.circuit.core.connection;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import dmillerw.circuit.api.tile.IConnectable;
@@ -16,7 +15,6 @@ import net.minecraft.world.World;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author dmillerw
@@ -44,10 +42,12 @@ public class ConnectionHandler {
 
     public void addConnection(int dimension, ChunkCoordinates self, Connection connection) {
         get(dimension).get(self).add(connection);
+        ConnectionWorldData.markDirty(dimension);
     }
 
     public void addConnection(World world, ChunkCoordinates self, Connection connection) {
         get(world).get(self).add(connection);
+        ConnectionWorldData.markDirty(world.provider.dimensionId);
     }
 
     /* UPDATES */

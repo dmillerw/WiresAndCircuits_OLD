@@ -20,6 +20,10 @@ public class ConnectionWorldData extends WorldSavedData {
     private static final String TAG = "WAC-Connection_data";
     private static final Map<Integer, ConnectionWorldData> INSTANCES = Maps.newHashMap();
 
+    public static void markDirty(int dimension) {
+        INSTANCES.get(dimension).markDirty();
+    }
+
     //TODO Connections are still lost on a complete client restart, but not on a simple server shutdown
     public static ConnectionWorldData load(World world) {
         ConnectionWorldData data = (ConnectionWorldData) world.loadItemData(ConnectionWorldData.class, TAG);
@@ -82,5 +86,12 @@ public class ConnectionWorldData extends WorldSavedData {
                 ConnectionHandler.INSTANCE.addConnection(dimension, origin, connection);
             }
         }
+    }
+
+    // This is kind of bad, I know, but it won't FRIGGIN SAVE OTHERWISE! :(
+    // Too tired to debug
+    @Override
+    public boolean isDirty() {
+        return true;
     }
 }
