@@ -22,8 +22,6 @@ public class TileRedstoneAdapter extends TileCoreConnectable implements IConnect
                 lastRedstone = redstone;
                 setOutput(0, WrappedValue.valueOf(lastRedstone));
                 sendPortUpdate(0);
-
-                System.out.println(ConnectionHandler.INSTANCE.connections);
             }
         }
     }
