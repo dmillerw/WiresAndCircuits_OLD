@@ -1,5 +1,8 @@
 package dmillerw.circuit.api.value;
 
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByte;
+
 /**
  * @author dmillerw
  */
@@ -39,5 +42,10 @@ public class WrappedBoolean extends WrappedValue {
     @Override
     public boolean isJString() {
         return false;
+    }
+
+    @Override
+    public NBTBase getNBTTag() {
+        return new NBTTagByte((byte) (value ? 1 : 0));
     }
 }

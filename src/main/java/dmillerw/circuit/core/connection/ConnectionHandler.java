@@ -42,12 +42,10 @@ public class ConnectionHandler {
 
     public void addConnection(int dimension, ChunkCoordinates self, Connection connection) {
         get(dimension).get(self).add(connection);
-        ConnectionWorldData.markDirty(dimension);
     }
 
     public void addConnection(World world, ChunkCoordinates self, Connection connection) {
         get(world).get(self).add(connection);
-        ConnectionWorldData.markDirty(world.provider.dimensionId);
     }
 
     /* UPDATES */

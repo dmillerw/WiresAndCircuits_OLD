@@ -2,6 +2,7 @@ package dmillerw.circuit.api.tile;
 
 import dmillerw.circuit.api.value.WrappedNull;
 import dmillerw.circuit.api.value.WrappedValue;
+import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * @author dmillerw
@@ -22,5 +23,13 @@ public class CachedState {
         for (int i=0; i<outputs.length; i++) {
             outputs[i] = new WrappedNull();
         }
+    }
+
+    public void writeToNBT(NBTTagCompound nbt) {
+
+    }
+
+    public void readFromNBT(NBTTagCompound nbt) {
+
     }
 }

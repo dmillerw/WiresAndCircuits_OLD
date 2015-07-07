@@ -1,5 +1,7 @@
 package dmillerw.circuit.api.value;
 
+import net.minecraft.nbt.NBTBase;
+
 /**
  * @author dmillerw
  */
@@ -33,5 +35,10 @@ public class WrappedNull extends WrappedValue {
     @Override
     public boolean isJString() {
         return false;
+    }
+
+    @Override
+    public NBTBase getNBTTag() {
+        return null;
     }
 }
