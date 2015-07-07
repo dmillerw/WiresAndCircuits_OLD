@@ -11,7 +11,7 @@ public abstract class TileRenderer<T extends TileCore> extends TileEntitySpecial
 
     @Override
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partial) {
-
+        renderTileAt((T) tileEntity, x, y, z, partial);
     }
 
     public abstract void renderTileAt(T tile, double x, double y, double z, float partial);

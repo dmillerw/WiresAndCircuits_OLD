@@ -64,18 +64,12 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
 
         data.setTag("_CACHED_DATA", cache);
 
-        System.out.println("WRITING " + getClass().getSimpleName() + " TO NBT:");
-        System.out.println(data);
-
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, data);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         NBTTagCompound data = pkt.func_148857_g();
-
-        System.out.println("READING " + getClass().getSimpleName() + " FROM NBT:");
-        System.out.println(data);
 
         // Vanilla handling first
         readFromNBT(data);
@@ -111,6 +105,8 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
                 cachedState.outputs[index] = value;
             }
         }
+
+        markForRenderUpdate();
     }
 
     /* ICONNECTABLE */

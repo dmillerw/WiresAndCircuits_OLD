@@ -1,4 +1,4 @@
-package dmillerw.circuit.item;
+package dmillerw.circuit.item.block;
 
 import dmillerw.circuit.api.gate.GateRegistry;
 import dmillerw.circuit.api.gate.IGate;
