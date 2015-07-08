@@ -49,6 +49,7 @@ public class ConnectionHandler {
     }
 
     /* UPDATES */
+    private LinkedList<DelayedUpdate> newQueue = Lists.newLinkedList();
     private LinkedList<DelayedUpdate> queuedUpdates = Lists.newLinkedList();
 
     public void queueUpdate(World world, ChunkCoordinates self, int outputPort, WrappedValue value) {
@@ -60,7 +61,7 @@ public class ConnectionHandler {
     }
 
     public void queueUpdate(DelayedUpdate delayedUpdate) {
-        queuedUpdates.add(delayedUpdate);
+        newQueue.add(delayedUpdate);
     }
 
     @SubscribeEvent
@@ -69,18 +70,22 @@ public class ConnectionHandler {
         if (server == null)
             return;
 
-        // We fire off one update per tick (in theory)
+        // First, run through the current queue
         Iterator<DelayedUpdate> iterator = queuedUpdates.iterator();
-        if (iterator.hasNext()) {
+        while (iterator.hasNext()) {
             DelayedUpdate update = iterator.next();
-
             World world = server.worldServerForDimension(update.dimension);
             TileEntity tileEntity = world.getTileEntity(update.targetPoint.posX, update.targetPoint.posY, update.targetPoint.posZ);
             if (tileEntity != null && tileEntity instanceof IConnectable) {
                 ((IConnectable) tileEntity).onInputUpdate(update.targetPort, update.value);
             }
-
             iterator.remove();
         }
+
+        // Just in case
+        queuedUpdates.clear();
+
+        // Then update the queue with any new updates
+        queuedUpdates.addAll(newQueue);
     }
 }
