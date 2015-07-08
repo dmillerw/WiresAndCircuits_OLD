@@ -10,9 +10,11 @@ import net.minecraft.nbt.NBTTagString;
  */
 public abstract class WrappedValue {
 
+    public static final WrappedNull NULL = new WrappedNull();
+
     public static WrappedValue valueOf(NBTBase value) {
         if (value == null)
-            return new WrappedNull();
+            return NULL;
 
         if (value instanceof NBTTagByte)
             return valueOf(((NBTTagByte) value).func_150290_f() == 1);
@@ -21,7 +23,7 @@ public abstract class WrappedValue {
         else if (value instanceof NBTTagString)
             return valueOf(((NBTTagString) value).func_150285_a_());
         else
-            return new WrappedNull();
+            return NULL;
     }
 
     public static WrappedBoolean valueOf(boolean value) {

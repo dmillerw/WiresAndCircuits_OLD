@@ -1,8 +1,9 @@
 package dmillerw.circuit.api.tile;
 
-import dmillerw.circuit.api.value.WrappedNull;
 import dmillerw.circuit.api.value.WrappedValue;
 import net.minecraft.nbt.NBTTagCompound;
+
+import static dmillerw.circuit.api.value.WrappedValue.NULL;
 
 /**
  * @author dmillerw
@@ -17,11 +18,11 @@ public class CachedState {
         this.outputs = new WrappedValue[outLength];
 
         for (int i=0; i<inputs.length; i++) {
-            inputs[i] = new WrappedNull();
+            inputs[i] = NULL;
         }
 
         for (int i=0; i<outputs.length; i++) {
-            outputs[i] = new WrappedNull();
+            outputs[i] = NULL;
         }
     }
 
