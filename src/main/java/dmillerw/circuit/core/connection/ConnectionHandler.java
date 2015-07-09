@@ -64,8 +64,9 @@ public class ConnectionHandler {
             if (connection.target.equals(check.target)) {
                 // ... and the same port ...
                 if (connection.targetInputPort == check.targetInputPort) {
-                    IConnectable connectable = (IConnectable) world.getTileEntity(connection.target.posX, connection.target.posY, connection.target.posZ);
-                    connectable.onConnectionRemoved(connection.targetInputPort);
+                    //TODO Do we reset the values when the block is removed? or just allow the target to keep the last known value
+//                    IConnectable connectable = (IConnectable) world.getTileEntity(connection.target.posX, connection.target.posY, connection.target.posZ);
+//                    connectable.onConnectionRemoved(connection.targetInputPort);
 
                     // ... we remove it
                     iterator.remove();
@@ -91,8 +92,9 @@ public class ConnectionHandler {
     public void removeConnection(World world, ChunkCoordinates coordinates) {
         // First, remove any connections that originate from this point
         for (Connection connection : get(world).removeAll(coordinates)) {
-            IConnectable connectable = (IConnectable) world.getTileEntity(connection.target.posX, connection.target.posY, connection.target.posZ);
-            connectable.onConnectionRemoved(connection.targetInputPort);
+            //TODO Do we reset the values when the block is removed? or just allow the target to keep the last known value
+//            IConnectable connectable = (IConnectable) world.getTileEntity(connection.target.posX, connection.target.posY, connection.target.posZ);
+//            connectable.onConnectionRemoved(connection.targetInputPort);
         }
 
         // Then remove any connections that lead to this point
