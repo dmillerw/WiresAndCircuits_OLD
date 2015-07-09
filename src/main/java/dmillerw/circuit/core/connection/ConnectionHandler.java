@@ -7,6 +7,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import dmillerw.circuit.api.tile.IConnectable;
 import dmillerw.circuit.api.value.WrappedValue;
+import dmillerw.circuit.network.packet.server.S01SetConnections;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
@@ -30,11 +31,11 @@ public class ConnectionHandler {
     /* CONNECTIONS */
     public Map<Integer, ArrayListMultimap<ChunkCoordinates, Connection>> connections = Maps.newHashMap();
 
-    private ArrayListMultimap<ChunkCoordinates, Connection> get(World world) {
+    public ArrayListMultimap<ChunkCoordinates, Connection> get(World world) {
         return get(world.provider.dimensionId);
     }
 
-    private ArrayListMultimap<ChunkCoordinates, Connection> get(int dimension) {
+    public ArrayListMultimap<ChunkCoordinates, Connection> get(int dimension) {
         ArrayListMultimap<ChunkCoordinates, Connection> map = connections.get(dimension);
         if (map == null) {
             map = ArrayListMultimap.create();
@@ -73,15 +74,19 @@ public class ConnectionHandler {
         }
     }
 
-    public void addConnection(World world, ChunkCoordinates self, Connection connection) {
+    public void addConnection(World world, ChunkCoordinates self, Connection connection, boolean update) {
         removeExisting(world, connection);
-
         get(world).get(self).add(connection);
 
+        //TODO validate connections. see if blocks exist, etc
 
-        //TODO This is clunky and bad :(
-        IConnectable connectable = (IConnectable) world.getTileEntity(self.posX, self.posY, self.posZ);
-        newQueue.add(new DelayedUpdate(world.provider.dimensionId, connection.target, connection.targetInputPort, connectable.getOutput(connection.selfOutputPort)));
+        if (update) {
+            S01SetConnections.get(world.provider.dimensionId).sendToDimension(world.provider.dimensionId);
+
+            //TODO This is clunky and bad :(
+            IConnectable connectable = (IConnectable) world.getTileEntity(self.posX, self.posY, self.posZ);
+            newQueue.add(new DelayedUpdate(world.provider.dimensionId, connection.target, connection.targetInputPort, connectable.getOutput(connection.selfOutputPort)));
+        }
     }
 
     public void removeConnection(World world, ChunkCoordinates coordinates) {

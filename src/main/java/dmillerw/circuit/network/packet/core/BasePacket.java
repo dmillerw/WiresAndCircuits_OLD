@@ -1,4 +1,4 @@
-package dmillerw.circuit.network.packet;
+package dmillerw.circuit.network.packet.core;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;

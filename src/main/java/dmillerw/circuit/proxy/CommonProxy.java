@@ -1,18 +1,17 @@
 package dmillerw.circuit.proxy;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import dmillerw.circuit.api.gate.GateRegistry;
 import dmillerw.circuit.block.ModBlocks;
 import dmillerw.circuit.core.connection.ConnectionHandler;
+import dmillerw.circuit.core.handler.PlayerEventHandler;
 import dmillerw.circuit.core.handler.WorldEventHandler;
 import dmillerw.circuit.gate.arithmatic.GateAdd;
 import dmillerw.circuit.item.ModItems;
 import dmillerw.circuit.network.PacketHandler;
 import dmillerw.circuit.util.EventUtil;
-import net.minecraftforge.common.MinecraftForge;
 
 /**
  * @author dmillerw
@@ -29,6 +28,7 @@ public class CommonProxy {
 
         EventUtil.register(ConnectionHandler.INSTANCE, EventUtil.Type.FML);
         EventUtil.register(new WorldEventHandler(), EventUtil.Type.FORGE);
+        EventUtil.register(new PlayerEventHandler(), EventUtil.Type.BOTH);
     }
 
     public void init(FMLInitializationEvent event) {

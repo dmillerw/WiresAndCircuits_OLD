@@ -4,7 +4,7 @@ import dmillerw.circuit.api.tile.IConnectable;
 import dmillerw.circuit.client.handler.ClientEventHandler;
 import dmillerw.circuit.core.connection.Connection;
 import dmillerw.circuit.core.connection.ConnectionHandler;
-import dmillerw.circuit.network.packet.C01WireTool;
+import dmillerw.circuit.network.packet.client.C01WireTool;
 import dmillerw.circuit.util.NBTUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -79,7 +79,7 @@ public class ItemWireTool extends Item {
             setTarget(itemStack, packet.coordinates, packet.port);
         } else {
             Connection connection = new Connection(target.coordinates, packet.port, target.port);
-            ConnectionHandler.INSTANCE.addConnection(entityPlayer.worldObj, packet.coordinates, connection);
+            ConnectionHandler.INSTANCE.addConnection(entityPlayer.worldObj, packet.coordinates, connection, true);
 
             clearTarget(itemStack);
         }

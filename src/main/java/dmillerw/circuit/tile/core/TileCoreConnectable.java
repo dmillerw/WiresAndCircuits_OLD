@@ -7,9 +7,6 @@ import dmillerw.circuit.core.connection.ConnectionHandler;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.util.ChunkCoordinates;
 
 import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
@@ -28,13 +25,9 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
         cachedState = new CachedState(getInputTypes().length, getOutputTypes().length);
     }
 
-    /* NETWORKING */
     @Override
-    public Packet getDescriptionPacket() {
-        // Sync normal data AND cache
-        NBTTagCompound data = new NBTTagCompound();
-        writeToNBT(data);
-
+    public void writeToNBT(NBTTagCompound data) {
+        super.writeToNBT(data);
 
         NBTTagCompound cache = new NBTTagCompound();
 
@@ -67,18 +60,12 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
         }
 
         data.setTag("_CACHED_DATA", cache);
-
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, data);
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-        NBTTagCompound data = pkt.func_148857_g();
+    public void readFromNBT(NBTTagCompound data) {
+        super.readFromNBT(data);
 
-        // Vanilla handling first
-        readFromNBT(data);
-
-        // Then read our cache data
         NBTTagCompound cache = data.getCompoundTag("_CACHED_DATA");
 
         int inCount = cache.getInteger("inCount");
@@ -109,8 +96,6 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
                 cachedState.outputs[index] = value;
             }
         }
-
-        markForRenderUpdate();
     }
 
     @Override

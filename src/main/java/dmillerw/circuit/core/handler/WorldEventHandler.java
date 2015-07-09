@@ -48,7 +48,7 @@ public class WorldEventHandler {
                 ChunkCoordinates origin = NBTUtil.readChunkCoordinates(fullTag.getCompoundTag("origin"));
                 Connection connection = Connection.readFromNBT(fullTag.getCompoundTag("connection"));
 
-                ConnectionHandler.INSTANCE.addConnection(event.world, origin, connection);
+                ConnectionHandler.INSTANCE.addConnection(event.world, origin, connection, false);
             }
         }
     }
@@ -60,7 +60,7 @@ public class WorldEventHandler {
 
         NBTTagList list = new NBTTagList();
 
-        for (Map.Entry<ChunkCoordinates, Connection> entry : ConnectionHandler.INSTANCE.connections.get(event.world.provider.dimensionId).entries()) {
+        for (Map.Entry<ChunkCoordinates, Connection> entry : ConnectionHandler.INSTANCE.get(event.world).entries()) {
             NBTTagCompound fullTag = new NBTTagCompound();
 
             NBTTagCompound origin = new NBTTagCompound();

@@ -5,11 +5,13 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import dmillerw.circuit.client.handler.ClientConnectionHandler;
 import dmillerw.circuit.client.handler.ClientEventHandler;
 import dmillerw.circuit.client.model.loader.FixedTechneModelLoader;
 import dmillerw.circuit.client.render.RenderTileScreen;
 import dmillerw.circuit.tile.TileScreen;
 import net.minecraftforge.client.model.AdvancedModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * @author dmillerw
@@ -25,6 +27,7 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileScreen.class, new RenderTileScreen());
 
         FMLCommonHandler.instance().bus().register(new ClientEventHandler());
+        MinecraftForge.EVENT_BUS.register(ClientConnectionHandler.INSTANCE);
     }
 
     @Override
