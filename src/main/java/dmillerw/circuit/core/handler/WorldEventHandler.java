@@ -6,7 +6,6 @@ import dmillerw.circuit.core.connection.ConnectionHandler;
 import dmillerw.circuit.util.NBTUtil;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
@@ -40,21 +39,16 @@ public class WorldEventHandler {
         }
 
         if (tag != null) {
-            NBTTagList dimensions = tag.getTagList("dimensions", Constants.NBT.TAG_DOUBLE);
-            for (int i=0; i<dimensions.tagCount(); i++) {
-                int dimension = (int) dimensions.func_150309_d(i);
+            ConnectionHandler.INSTANCE.clearConnections(event.world);
 
-                ConnectionHandler.INSTANCE.clearConnections(dimension);
+            NBTTagList connections = tag.getTagList("connections", Constants.NBT.TAG_COMPOUND);
+            for (int j=0; j<connections.tagCount(); j++) {
+                NBTTagCompound fullTag = connections.getCompoundTagAt(j);
 
-                NBTTagList connections = tag.getTagList("connections_" + dimension, Constants.NBT.TAG_COMPOUND);
-                for (int j=0; j<connections.tagCount(); j++) {
-                    NBTTagCompound fullTag = connections.getCompoundTagAt(j);
+                ChunkCoordinates origin = NBTUtil.readChunkCoordinates(fullTag.getCompoundTag("origin"));
+                Connection connection = Connection.readFromNBT(fullTag.getCompoundTag("connection"));
 
-                    ChunkCoordinates origin = NBTUtil.readChunkCoordinates(fullTag.getCompoundTag("origin"));
-                    Connection connection = Connection.readFromNBT(fullTag.getCompoundTag("connection"));
-
-                    ConnectionHandler.INSTANCE.addConnection(dimension, origin, connection);
-                }
+                ConnectionHandler.INSTANCE.addConnection(event.world, origin, connection);
             }
         }
     }
@@ -64,29 +58,23 @@ public class WorldEventHandler {
         NBTTagCompound tag = new NBTTagCompound();
         File file = getFile(event.world);
 
-        NBTTagList dimensions = new NBTTagList();
-        for (int dimension : ConnectionHandler.INSTANCE.connections.keySet()) {
-            dimensions.appendTag(new NBTTagDouble(dimension)); // NBTTagList doesn't have a method for getting ints...
+        NBTTagList list = new NBTTagList();
 
-            NBTTagList list = new NBTTagList();
+        for (Map.Entry<ChunkCoordinates, Connection> entry : ConnectionHandler.INSTANCE.connections.get(event.world.provider.dimensionId).entries()) {
+            NBTTagCompound fullTag = new NBTTagCompound();
 
-            for (Map.Entry<ChunkCoordinates, Connection> entry : ConnectionHandler.INSTANCE.connections.get(dimension).entries()) {
-                NBTTagCompound fullTag = new NBTTagCompound();
+            NBTTagCompound origin = new NBTTagCompound();
+            NBTUtil.writeChunkCoordinates(entry.getKey(), origin);
+            fullTag.setTag("origin", origin);
 
-                NBTTagCompound origin = new NBTTagCompound();
-                NBTUtil.writeChunkCoordinates(entry.getKey(), origin);
-                fullTag.setTag("origin", origin);
+            NBTTagCompound connection = new NBTTagCompound();
+            entry.getValue().writeToNBT(connection);
+            fullTag.setTag("connection", connection);
 
-                NBTTagCompound connection = new NBTTagCompound();
-                entry.getValue().writeToNBT(connection);
-                fullTag.setTag("connection", connection);
-
-                list.appendTag(fullTag);
-            }
-
-            tag.setTag("connections_" + dimension, list);
+            list.appendTag(fullTag);
         }
-        tag.setTag("dimensions", dimensions);
+
+        tag.setTag("connections", list);
 
         try {
             FileOutputStream fos = new FileOutputStream(file);
