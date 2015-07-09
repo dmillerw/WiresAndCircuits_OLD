@@ -4,6 +4,7 @@ import dmillerw.circuit.api.tile.CachedState;
 import dmillerw.circuit.api.tile.IConnectable;
 import dmillerw.circuit.api.value.WrappedValue;
 import dmillerw.circuit.core.connection.ConnectionHandler;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
@@ -107,6 +108,13 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
         }
 
         markForRenderUpdate();
+    }
+
+    @Override
+    public void onBlockBroken(Block block, int meta) {
+        if (!worldObj.isRemote) {
+            ConnectionHandler.INSTANCE.removeConnection(worldObj, new ChunkCoordinates(xCoord, yCoord, zCoord));
+        }
     }
 
     /* ICONNECTABLE */

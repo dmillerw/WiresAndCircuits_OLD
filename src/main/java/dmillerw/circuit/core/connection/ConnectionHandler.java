@@ -33,19 +33,49 @@ public class ConnectionHandler {
     }
 
     private ArrayListMultimap<ChunkCoordinates, Connection> get(int dimension) {
-        if (connections.get(dimension) == null) {
-            ArrayListMultimap<ChunkCoordinates, Connection> mm = ArrayListMultimap.create();
-            connections.put(dimension, mm);
+        ArrayListMultimap<ChunkCoordinates, Connection> map = connections.get(dimension);
+        if (map == null) {
+            map = ArrayListMultimap.create();
+            connections.put(dimension, map);
         }
-        return connections.get(dimension);
+        return map;
+    }
+
+    private void print(ArrayListMultimap<ChunkCoordinates, Connection> map) {
+        for (Map.Entry<ChunkCoordinates, Connection> entry : map.entries()) {
+            System.out.println("ORIGIN: " + entry.getKey());
+            System.out.println("TARGET: " + entry.getValue());
+        }
+    }
+
+    public void clearConnections(int dimension) {
+        get(dimension).clear();
     }
 
     public void addConnection(int dimension, ChunkCoordinates self, Connection connection) {
         get(dimension).get(self).add(connection);
+        print(get(dimension));
     }
 
     public void addConnection(World world, ChunkCoordinates self, Connection connection) {
         get(world).get(self).add(connection);
+        print(get(world));
+    }
+
+    public void removeConnection(World world, ChunkCoordinates coordinates) {
+        // First, remove any connections that originate from this point
+        get(world).removeAll(coordinates);
+
+        // Then remove any connections that lead to this point
+        for (Iterator<Map.Entry<ChunkCoordinates, Connection>> iterator = get(world).entries().iterator(); iterator.hasNext(); ) {
+            Map.Entry<ChunkCoordinates, Connection> entry = iterator.next();
+            Connection connection = entry.getValue();
+            if (connection.target.equals(coordinates)) {
+                iterator.remove();
+            }
+        }
+
+        print(get(world));
     }
 
     /* UPDATES */
