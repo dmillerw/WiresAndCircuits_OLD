@@ -54,12 +54,10 @@ public class ConnectionHandler {
 
     public void addConnection(int dimension, ChunkCoordinates self, Connection connection) {
         get(dimension).get(self).add(connection);
-        print(get(dimension));
     }
 
     public void addConnection(World world, ChunkCoordinates self, Connection connection) {
         get(world).get(self).add(connection);
-        print(get(world));
     }
 
     public void removeConnection(World world, ChunkCoordinates coordinates) {
@@ -74,8 +72,6 @@ public class ConnectionHandler {
                 iterator.remove();
             }
         }
-
-        print(get(world));
     }
 
     /* UPDATES */
