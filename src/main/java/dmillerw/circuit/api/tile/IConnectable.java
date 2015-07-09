@@ -21,6 +21,8 @@ public interface IConnectable {
      */
     WrappedValue getInput(int index);
 
+    WrappedValue getOutput(int index);
+
     /**
      * Updates the cached output value. Value updates aren't actually sent until {@link IConnectable#sendPortUpdate(int)} is called
      */

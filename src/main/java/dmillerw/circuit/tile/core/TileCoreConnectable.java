@@ -19,6 +19,9 @@ import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
  */
 public abstract class TileCoreConnectable extends TileCore implements IConnectable {
 
+    //TODO Re-vamp this cached state idea
+    //TODO Serialize with tile?
+
     private CachedState cachedState = new CachedState(getInputTypes().length, getOutputTypes().length);
 
     public final void refreshCache() {
@@ -127,6 +130,11 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
     @Override
     public WrappedValue getInput(int index) {
         return cachedState.inputs[index];
+    }
+
+    @Override
+    public WrappedValue getOutput(int index) {
+        return cachedState.outputs[index];
     }
 
     @Override

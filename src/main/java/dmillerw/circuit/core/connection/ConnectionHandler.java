@@ -21,6 +21,8 @@ import java.util.Map;
  */
 public class ConnectionHandler {
 
+    //TODO COMMENTS!
+
     public static final ConnectionHandler INSTANCE = new ConnectionHandler();
 
     private ConnectionHandler() {}
@@ -48,21 +50,45 @@ public class ConnectionHandler {
         }
     }
 
-    public void clearConnections(int dimension) {
-        get(dimension).clear();
+    public void clearConnections(World world) {
+        get(world).clear();
     }
 
-    public void addConnection(int dimension, ChunkCoordinates self, Connection connection) {
-        get(dimension).get(self).add(connection);
+    private void removeExisting(World world, Connection check) {
+        // First check to see if a connection to the target's input port already exists
+        // If it does, we remove it
+
+        for (Iterator<Map.Entry<ChunkCoordinates, Connection>> iterator = get(world).entries().iterator(); iterator.hasNext(); ) {
+            Map.Entry<ChunkCoordinates, Connection> entry = iterator.next();
+            Connection connection = entry.getValue();
+
+            // If the connection leads to the same point...
+            if (connection.target.equals(check.target)) {
+                // ... and the same port ...
+                if (connection.targetInputPort == check.targetInputPort) {
+                    // ... we remove it
+                    iterator.remove();
+                }
+            }
+        }
     }
 
     public void addConnection(World world, ChunkCoordinates self, Connection connection) {
+        removeExisting(world, connection);
+
         get(world).get(self).add(connection);
+
+
+        //TODO This is clunky and bad :(
+        IConnectable connectable = (IConnectable) world.getTileEntity(self.posX, self.posY, self.posZ);
+        newQueue.add(new DelayedUpdate(world.provider.dimensionId, connection.target, connection.targetInputPort, connectable.getOutput(connection.selfOutputPort)));
     }
 
     public void removeConnection(World world, ChunkCoordinates coordinates) {
         // First, remove any connections that originate from this point
-        get(world).removeAll(coordinates);
+        for (Connection connection : get(world).removeAll(coordinates)) {
+            queueUpdate(new DelayedUpdate(world.provider.dimensionId, connection.target, connection.targetInputPort, WrappedValue.NULL));
+        }
 
         // Then remove any connections that lead to this point
         for (Iterator<Map.Entry<ChunkCoordinates, Connection>> iterator = get(world).entries().iterator(); iterator.hasNext(); ) {
@@ -81,7 +107,7 @@ public class ConnectionHandler {
     public void queueUpdate(World world, ChunkCoordinates self, int outputPort, WrappedValue value) {
         for (Connection connection : get(world).get(self)) {
             if (connection.selfOutputPort == outputPort) {
-                queueUpdate(new DelayedUpdate(world.provider.dimensionId, connection.target, outputPort, value));
+                queueUpdate(new DelayedUpdate(world.provider.dimensionId, connection.target, connection.targetInputPort, value));
             }
         }
     }
@@ -113,5 +139,6 @@ public class ConnectionHandler {
 
         // Then update the queue with any new updates
         queuedUpdates.addAll(newQueue);
+        newQueue.clear();
     }
 }
