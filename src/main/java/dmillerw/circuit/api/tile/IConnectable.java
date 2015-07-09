@@ -2,36 +2,48 @@ package dmillerw.circuit.api.tile;
 
 import dmillerw.circuit.api.value.ValueType;
 import dmillerw.circuit.api.value.WrappedValue;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.World;
 
 /**
  * @author dmillerw
  */
 public interface IConnectable {
 
+    World getWorld();
+    ChunkCoordinates getCoordinates();
+
     ValueType[] getInputTypes();
     ValueType[] getOutputTypes();
 
     /**
-     * Fires whenever another connectable object dispatches an update to this connectable
+     * Fires whenever a connection is established from this block to another
      */
-    void onInputUpdate(int index, WrappedValue value);
+    void onConnectionEstablished(ChunkCoordinates target, int selfOutput);
 
     /**
-     * Retrieves the cached input value. Mainly used for gate computation
+     * Fires whenever a connection is removed. Only fires on TARGET ports (ports receiving data from another)
      */
-    WrappedValue getInput(int index);
-
-    WrappedValue getOutput(int index);
+    void onConnectionRemoved(int input);
 
     /**
-     * Updates the cached output value. Value updates aren't actually sent until {@link IConnectable#sendPortUpdate(int)} is called
+     * Updates the cached input value.
+     */
+    void setInput(int index, WrappedValue value);
+
+    /**
+     * Updates the cached output value. Value updates shouldn't send unless 'sendUpdate' is true
      */
     void setOutput(int index, WrappedValue value);
 
     /**
-     * Actually sends the output value to all connected blocks. Passing '-1' as the index will update all connected
-     * blocsk on all ports. A complete update
+     * Retrieves the cached input value
      */
-    void sendPortUpdate(int index);
+    WrappedValue getInput(int index);
+
+    /**
+     * Retrieves the cached output value
+     */
+    WrappedValue getOutput(int index);
 }
 

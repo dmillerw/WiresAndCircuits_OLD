@@ -1,5 +1,7 @@
 package dmillerw.circuit.api.value;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagDouble;
@@ -26,6 +28,19 @@ public abstract class WrappedValue {
             return NULL;
     }
 
+    public static WrappedValue valueOf(ValueType type, ByteBuf buffer) {
+        switch (type) {
+            case BOOLEAN:
+                return new WrappedBoolean(buffer.readBoolean());
+            case NUMBER:
+                return new WrappedNumber(buffer.readDouble());
+            case STRING:
+                return new WrappedString(ByteBufUtils.readUTF8String(buffer));
+            default:
+                return NULL;
+        }
+    }
+
     public static WrappedBoolean valueOf(boolean value) {
         return new WrappedBoolean(value);
     }
@@ -39,6 +54,8 @@ public abstract class WrappedValue {
         return new WrappedString(value);
     }
 
+    public abstract ValueType getType();
+
     public abstract boolean toBoolean();
     public abstract double toNumber();
     public abstract String toJString();
@@ -48,4 +65,6 @@ public abstract class WrappedValue {
     public abstract boolean isJString();
 
     public abstract NBTBase getNBTTag();
+
+    public abstract void writeToBuffer(ByteBuf buf);
 }

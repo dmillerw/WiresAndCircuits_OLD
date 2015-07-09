@@ -21,8 +21,8 @@ public class TileDebug extends TileCoreConnectable implements IConnectable {
     }
 
     @Override
-    public void onInputUpdate(int index, WrappedValue value) {
-        super.onInputUpdate(index, value);
+    public void setInput(int index, WrappedValue value) {
+        super.setInput(index, value);
         System.out.println("DEBUG: Port " + index + " was set to " + value.toJString());
     }
 }

@@ -1,5 +1,7 @@
 package dmillerw.circuit.api.value;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagString;
 
@@ -12,6 +14,11 @@ public class WrappedString extends WrappedValue {
 
     protected WrappedString(String value) {
         this.value = value;
+    }
+
+    @Override
+    public ValueType getType() {
+        return ValueType.STRING;
     }
 
     @Override
@@ -47,5 +54,10 @@ public class WrappedString extends WrappedValue {
     @Override
     public NBTBase getNBTTag() {
         return new NBTTagString(value);
+    }
+
+    @Override
+    public void writeToBuffer(ByteBuf buf) {
+        ByteBufUtils.writeUTF8String(buf, value);
     }
 }

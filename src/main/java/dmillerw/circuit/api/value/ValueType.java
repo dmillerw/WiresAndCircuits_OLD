@@ -8,5 +8,6 @@ public enum ValueType {
     BOOLEAN,
     NUMBER,
     STRING,
+    NULL,
     ANY
 }

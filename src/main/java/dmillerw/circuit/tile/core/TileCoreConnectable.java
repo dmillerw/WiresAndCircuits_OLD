@@ -4,10 +4,13 @@ import dmillerw.circuit.api.tile.CachedState;
 import dmillerw.circuit.api.tile.IConnectable;
 import dmillerw.circuit.api.value.WrappedValue;
 import dmillerw.circuit.core.connection.ConnectionHandler;
+import dmillerw.circuit.network.packet.server.S01ValueUpdate;
+import dmillerw.circuit.util.ConnectionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.World;
 
 import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
 
@@ -15,9 +18,6 @@ import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
  * @author dmillerw
  */
 public abstract class TileCoreConnectable extends TileCore implements IConnectable {
-
-    //TODO Re-vamp this cached state idea
-    //TODO Serialize with tile?
 
     private CachedState cachedState = new CachedState(getInputTypes().length, getOutputTypes().length);
 
@@ -39,7 +39,7 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
 
         if (inCount > 0) {
             NBTTagList inputs = new NBTTagList();
-            for (int i=0; i<cachedState.inputs.length; i++) {
+            for (int i = 0; i < cachedState.inputs.length; i++) {
                 NBTTagCompound index = new NBTTagCompound();
                 index.setInteger("_index", i);
                 index.setTag("_data", cachedState.inputs[i].getNBTTag());
@@ -50,7 +50,7 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
 
         if (outCount > 0) {
             NBTTagList outputs = new NBTTagList();
-            for (int i=0; i<cachedState.outputs.length; i++) {
+            for (int i = 0; i < cachedState.outputs.length; i++) {
                 NBTTagCompound index = new NBTTagCompound();
                 index.setInteger("_index", i);
                 index.setTag("_data", cachedState.outputs[i].getNBTTag());
@@ -75,7 +75,7 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
 
         if (inCount > 0 && cache.hasKey("inputs")) {
             NBTTagList inputs = cache.getTagList("inputs", TAG_COMPOUND);
-            for (int i=0; i<inputs.tagCount(); i++) {
+            for (int i = 0; i < inputs.tagCount(); i++) {
                 NBTTagCompound tag = inputs.getCompoundTagAt(i);
 
                 int index = tag.getInteger("_index");
@@ -87,7 +87,7 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
 
         if (outCount > 0 && cache.hasKey("outputs")) {
             NBTTagList outputs = cache.getTagList("outputs", TAG_COMPOUND);
-            for (int i=0; i<outputs.tagCount(); i++) {
+            for (int i = 0; i < outputs.tagCount(); i++) {
                 NBTTagCompound tag = outputs.getCompoundTagAt(i);
 
                 int index = tag.getInteger("_index");
@@ -107,9 +107,42 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
 
     /* ICONNECTABLE */
     @Override
-    public void onInputUpdate(int index, WrappedValue value) {
+    public World getWorld() {
+        return worldObj;
+    }
+
+    @Override
+    public ChunkCoordinates getCoordinates() {
+        return new ChunkCoordinates(xCoord, yCoord, zCoord);
+    }
+
+    @Override
+    public void onConnectionEstablished(ChunkCoordinates target, int selfOutput) {
+        ConnectionUtil.sendConnectableUpdate(this, selfOutput);
+    }
+
+    @Override
+    public void onConnectionRemoved(int input) {
+        setInput(input, WrappedValue.NULL);
+    }
+
+    @Override
+    public void setInput(int index, WrappedValue value) {
         cachedState.inputs[index] = value;
-        markForUpdate();
+
+        if (!worldObj.isRemote) {
+            S01ValueUpdate.sendInputUpdate(this, index);
+        }
+    }
+
+    @Override
+    public void setOutput(int index, WrappedValue value) {
+        cachedState.outputs[index] = value;
+
+        if (!worldObj.isRemote) {
+            S01ValueUpdate.sendOutputUpdate(this, index);
+            ConnectionUtil.sendConnectableUpdate(this, index);
+        }
     }
 
     @Override
@@ -120,22 +153,5 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
     @Override
     public WrappedValue getOutput(int index) {
         return cachedState.outputs[index];
-    }
-
-    @Override
-    public void setOutput(int index, WrappedValue value) {
-        cachedState.outputs[index] = value;
-        markForUpdate();
-    }
-
-    @Override
-    public void sendPortUpdate(int index) {
-        if (index == -1) {
-            for (int i=0; i<getOutputTypes().length; i++) {
-                ConnectionHandler.INSTANCE.queueUpdate(worldObj, new ChunkCoordinates(xCoord, yCoord, zCoord), i, cachedState.outputs[i]);
-            }
-        } else {
-            ConnectionHandler.INSTANCE.queueUpdate(worldObj, new ChunkCoordinates(xCoord, yCoord, zCoord), index, cachedState.outputs[index]);
-        }
     }
 }

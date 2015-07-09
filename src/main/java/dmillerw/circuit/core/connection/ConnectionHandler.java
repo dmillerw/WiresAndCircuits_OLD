@@ -1,20 +1,13 @@
 package dmillerw.circuit.core.connection;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import dmillerw.circuit.api.tile.IConnectable;
-import dmillerw.circuit.api.value.WrappedValue;
-import dmillerw.circuit.network.packet.server.S01SetConnections;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +37,10 @@ public class ConnectionHandler {
         return map;
     }
 
+    public List<Connection> get(IConnectable connectable) {
+        return get(connectable.getWorld()).get(connectable.getCoordinates());
+    }
+
     private void print(ArrayListMultimap<ChunkCoordinates, Connection> map) {
         for (Map.Entry<ChunkCoordinates, Connection> entry : map.entries()) {
             System.out.println("ORIGIN: " + entry.getKey());
@@ -67,6 +64,9 @@ public class ConnectionHandler {
             if (connection.target.equals(check.target)) {
                 // ... and the same port ...
                 if (connection.targetInputPort == check.targetInputPort) {
+                    IConnectable connectable = (IConnectable) world.getTileEntity(connection.target.posX, connection.target.posY, connection.target.posZ);
+                    connectable.onConnectionRemoved(connection.targetInputPort);
+
                     // ... we remove it
                     iterator.remove();
                 }
@@ -75,24 +75,24 @@ public class ConnectionHandler {
     }
 
     public void addConnection(World world, ChunkCoordinates self, Connection connection, boolean update) {
-        removeExisting(world, connection);
+        if (update)
+            removeExisting(world, connection);
+
         get(world).get(self).add(connection);
 
         //TODO validate connections. see if blocks exist, etc
 
         if (update) {
-            S01SetConnections.get(world.provider.dimensionId).sendToDimension(world.provider.dimensionId);
-
-            //TODO This is clunky and bad :(
             IConnectable connectable = (IConnectable) world.getTileEntity(self.posX, self.posY, self.posZ);
-            newQueue.add(new DelayedUpdate(world.provider.dimensionId, connection.target, connection.targetInputPort, connectable.getOutput(connection.selfOutputPort)));
+            connectable.onConnectionEstablished(connection.target, connection.selfOutputPort);
         }
     }
 
     public void removeConnection(World world, ChunkCoordinates coordinates) {
         // First, remove any connections that originate from this point
         for (Connection connection : get(world).removeAll(coordinates)) {
-            queueUpdate(new DelayedUpdate(world.provider.dimensionId, connection.target, connection.targetInputPort, WrappedValue.NULL));
+            IConnectable connectable = (IConnectable) world.getTileEntity(connection.target.posX, connection.target.posY, connection.target.posZ);
+            connectable.onConnectionRemoved(connection.targetInputPort);
         }
 
         // Then remove any connections that lead to this point
@@ -103,47 +103,5 @@ public class ConnectionHandler {
                 iterator.remove();
             }
         }
-    }
-
-    /* UPDATES */
-    private LinkedList<DelayedUpdate> newQueue = Lists.newLinkedList();
-    private LinkedList<DelayedUpdate> queuedUpdates = Lists.newLinkedList();
-
-    public void queueUpdate(World world, ChunkCoordinates self, int outputPort, WrappedValue value) {
-        for (Connection connection : get(world).get(self)) {
-            if (connection.selfOutputPort == outputPort) {
-                queueUpdate(new DelayedUpdate(world.provider.dimensionId, connection.target, connection.targetInputPort, value));
-            }
-        }
-    }
-
-    public void queueUpdate(DelayedUpdate delayedUpdate) {
-        newQueue.add(delayedUpdate);
-    }
-
-    @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent event) {
-        MinecraftServer server = MinecraftServer.getServer();
-        if (server == null)
-            return;
-
-        // First, run through the current queue
-        Iterator<DelayedUpdate> iterator = queuedUpdates.iterator();
-        while (iterator.hasNext()) {
-            DelayedUpdate update = iterator.next();
-            World world = server.worldServerForDimension(update.dimension);
-            TileEntity tileEntity = world.getTileEntity(update.targetPoint.posX, update.targetPoint.posY, update.targetPoint.posZ);
-            if (tileEntity != null && tileEntity instanceof IConnectable) {
-                ((IConnectable) tileEntity).onInputUpdate(update.targetPort, update.value);
-            }
-            iterator.remove();
-        }
-
-        // Just in case
-        queuedUpdates.clear();
-
-        // Then update the queue with any new updates
-        queuedUpdates.addAll(newQueue);
-        newQueue.clear();
     }
 }

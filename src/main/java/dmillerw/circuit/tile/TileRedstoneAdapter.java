@@ -3,7 +3,6 @@ package dmillerw.circuit.tile;
 import dmillerw.circuit.api.tile.IConnectable;
 import dmillerw.circuit.api.value.ValueType;
 import dmillerw.circuit.api.value.WrappedValue;
-import dmillerw.circuit.core.connection.ConnectionHandler;
 import dmillerw.circuit.tile.core.TileCoreConnectable;
 import net.minecraft.block.Block;
 
@@ -21,7 +20,6 @@ public class TileRedstoneAdapter extends TileCoreConnectable implements IConnect
             if (lastRedstone != redstone) {
                 lastRedstone = redstone;
                 setOutput(0, WrappedValue.valueOf(lastRedstone));
-                sendPortUpdate(0);
             }
         }
     }

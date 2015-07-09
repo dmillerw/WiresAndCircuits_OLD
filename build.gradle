@@ -53,8 +53,9 @@ processResources {
 
 jar {
     manifest {
-        attributes 'FMLCorePlugin': 'subsistence.common.asm.SubsistenceCorePlugin'
+        attributes 'FMLCorePlugin': 'dmillerw.circuit.asm.CorePlugin'
         attributes 'FMLCorePluginContainsFMLMod': 'true'
+        attributes 'FMLAT': 'WiresAndCircuits_at.cfg'
     }
 
 //    classifier = 'universal'

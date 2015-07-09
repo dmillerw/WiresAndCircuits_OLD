@@ -6,7 +6,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import dmillerw.circuit.api.gate.GateRegistry;
 import dmillerw.circuit.block.ModBlocks;
 import dmillerw.circuit.core.connection.ConnectionHandler;
-import dmillerw.circuit.core.handler.PlayerEventHandler;
+import dmillerw.circuit.core.connection.UpdateHandler;
 import dmillerw.circuit.core.handler.WorldEventHandler;
 import dmillerw.circuit.gate.arithmatic.GateAdd;
 import dmillerw.circuit.item.ModItems;
@@ -27,8 +27,8 @@ public class CommonProxy {
         GateRegistry.registerGate("arithmatic:add", new GateAdd());
 
         EventUtil.register(ConnectionHandler.INSTANCE, EventUtil.Type.FML);
+        EventUtil.register(UpdateHandler.INSTANCE, EventUtil.Type.FML);
         EventUtil.register(new WorldEventHandler(), EventUtil.Type.FORGE);
-        EventUtil.register(new PlayerEventHandler(), EventUtil.Type.BOTH);
     }
 
     public void init(FMLInitializationEvent event) {

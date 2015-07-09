@@ -1,5 +1,6 @@
 package dmillerw.circuit.api.value;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagDouble;
 
@@ -12,6 +13,11 @@ public class WrappedNumber extends WrappedValue {
 
     protected WrappedNumber(double value) {
         this.value = value;
+    }
+
+    @Override
+    public ValueType getType() {
+        return ValueType.NUMBER;
     }
 
     @Override
@@ -47,5 +53,10 @@ public class WrappedNumber extends WrappedValue {
     @Override
     public NBTBase getNBTTag() {
         return new NBTTagDouble(value);
+    }
+
+    @Override
+    public void writeToBuffer(ByteBuf buf) {
+        buf.writeDouble(value);
     }
 }
