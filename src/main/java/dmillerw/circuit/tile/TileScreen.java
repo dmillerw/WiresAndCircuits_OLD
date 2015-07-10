@@ -1,6 +1,5 @@
 package dmillerw.circuit.tile;
 
-import dmillerw.circuit.api.value.ValueType;
 import dmillerw.circuit.tile.core.TileCoreConnectable;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
@@ -44,12 +43,12 @@ public class TileScreen extends TileCoreConnectable {
 
     /* ICONNECTABLE */
     @Override
-    public ValueType[] getInputTypes() {
-        return new ValueType[] {ValueType.ANY};
+    public int getInputCount() {
+        return 1;
     }
 
     @Override
-    public ValueType[] getOutputTypes() {
-        return new ValueType[0];
+    public int getOutputCount() {
+        return 0;
     }
 }

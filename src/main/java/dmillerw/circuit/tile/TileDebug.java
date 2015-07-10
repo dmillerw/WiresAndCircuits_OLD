@@ -1,7 +1,6 @@
 package dmillerw.circuit.tile;
 
 import dmillerw.circuit.api.tile.IConnectable;
-import dmillerw.circuit.api.value.ValueType;
 import dmillerw.circuit.api.value.WrappedValue;
 import dmillerw.circuit.tile.core.TileCoreConnectable;
 
@@ -11,13 +10,13 @@ import dmillerw.circuit.tile.core.TileCoreConnectable;
 public class TileDebug extends TileCoreConnectable implements IConnectable {
 
     @Override
-    public ValueType[] getInputTypes() {
-        return new ValueType[] {ValueType.ANY};
+    public int getInputCount() {
+        return 1;
     }
 
     @Override
-    public ValueType[] getOutputTypes() {
-        return new ValueType[0];
+    public int getOutputCount() {
+        return 0;
     }
 
     @Override

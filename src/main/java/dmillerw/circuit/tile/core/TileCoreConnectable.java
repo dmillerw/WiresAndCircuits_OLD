@@ -19,10 +19,10 @@ import static net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND;
  */
 public abstract class TileCoreConnectable extends TileCore implements IConnectable {
 
-    private CachedState cachedState = new CachedState(getInputTypes().length, getOutputTypes().length);
+    private CachedState cachedState = new CachedState(getInputCount(), getOutputCount());
 
     public final void refreshCache() {
-        cachedState = new CachedState(getInputTypes().length, getOutputTypes().length);
+        cachedState = new CachedState(getInputCount(), getOutputCount());
     }
 
     @Override
@@ -31,8 +31,8 @@ public abstract class TileCoreConnectable extends TileCore implements IConnectab
 
         NBTTagCompound cache = new NBTTagCompound();
 
-        final int inCount = getInputTypes().length;
-        final int outCount = getOutputTypes().length;
+        final int inCount = getInputCount();
+        final int outCount = getOutputCount();
 
         cache.setInteger("inCount", inCount);
         cache.setInteger("outCount", outCount);

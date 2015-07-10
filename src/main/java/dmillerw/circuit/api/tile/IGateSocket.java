@@ -1,5 +1,6 @@
 package dmillerw.circuit.api.tile;
 
+import dmillerw.circuit.api.gate.IGate;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -7,5 +8,6 @@ import net.minecraft.nbt.NBTTagCompound;
  */
 public interface IGateSocket extends IConnectable {
 
+    void setGate(IGate gate);
     NBTTagCompound getData();
 }

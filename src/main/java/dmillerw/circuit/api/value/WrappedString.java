@@ -10,7 +10,7 @@ import net.minecraft.nbt.NBTTagString;
  */
 public class WrappedString extends WrappedValue {
 
-    private final String value;
+    protected final String value;
 
     protected WrappedString(String value) {
         this.value = value;
@@ -22,36 +22,6 @@ public class WrappedString extends WrappedValue {
     }
 
     @Override
-    public boolean toBoolean() {
-        return false;
-    }
-
-    @Override
-    public double toNumber() {
-        return 0;
-    }
-
-    @Override
-    public String toJString() {
-        return value;
-    }
-
-    @Override
-    public boolean isBoolean() {
-        return false;
-    }
-
-    @Override
-    public boolean isNumber() {
-        return false;
-    }
-
-    @Override
-    public boolean isJString() {
-        return true;
-    }
-
-    @Override
     public NBTBase getNBTTag() {
         return new NBTTagString(value);
     }
@@ -59,5 +29,10 @@ public class WrappedString extends WrappedValue {
     @Override
     public void writeToBuffer(ByteBuf buf) {
         ByteBufUtils.writeUTF8String(buf, value);
+    }
+
+    @Override
+    public boolean equals(WrappedValue value) {
+        return value instanceof WrappedString && this.value.equals(((WrappedString) value).value);
     }
 }

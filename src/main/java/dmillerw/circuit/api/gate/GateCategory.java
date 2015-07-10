@@ -5,5 +5,6 @@ package dmillerw.circuit.api.gate;
  */
 public enum GateCategory {
 
-    ARITHMATIC
+    ARITHMATIC,
+    CONDITIONAL
 }

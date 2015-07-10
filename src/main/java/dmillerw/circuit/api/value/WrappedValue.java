@@ -41,6 +41,42 @@ public abstract class WrappedValue {
         }
     }
 
+    public static WrappedValue cast(ValueType type, WrappedValue value) {
+        if (value.getType() == type)
+            return value;
+
+        switch (type) {
+            case BOOLEAN: {
+                switch (value.getType()) {
+                    case BOOLEAN: return value;
+                    case NUMBER: return WrappedValue.valueOf(((WrappedNumber)value).value != 0);
+                    case STRING: return WrappedValue.valueOf(Boolean.parseBoolean(((WrappedString)value).value));
+                    default: return WrappedValue.valueOf(false);
+                }
+            }
+
+            case NUMBER: {
+                switch (value.getType()) {
+                    case BOOLEAN: return WrappedValue.valueOf(((WrappedBoolean)value).value ? 1 : 0);
+                    case NUMBER: return value;
+                    case STRING: return WrappedValue.valueOf(Double.parseDouble(((WrappedString)value).value));
+                    default: return WrappedValue.valueOf(0);
+                }
+            }
+
+            case STRING: {
+                switch (value.getType()) {
+                    case BOOLEAN: return WrappedValue.valueOf(Boolean.toString(((WrappedBoolean)value).value));
+                    case NUMBER: return WrappedValue.valueOf(Double.toString(((WrappedNumber)value).value));
+                    case STRING: return value;
+                    default: return WrappedValue.valueOf("");
+                }
+            }
+
+            default: return NULL;
+        }
+    }
+
     public static WrappedBoolean valueOf(boolean value) {
         return new WrappedBoolean(value);
     }
@@ -55,16 +91,26 @@ public abstract class WrappedValue {
     }
 
     public abstract ValueType getType();
-
-    public abstract boolean toBoolean();
-    public abstract double toNumber();
-    public abstract String toJString();
-
-    public abstract boolean isBoolean();
-    public abstract boolean isNumber();
-    public abstract boolean isJString();
-
     public abstract NBTBase getNBTTag();
-
     public abstract void writeToBuffer(ByteBuf buf);
+
+    public final boolean toBoolean() {
+        return ((WrappedBoolean)cast(ValueType.BOOLEAN)).value;
+    }
+
+    public final double toNumber() {
+        return ((WrappedNumber)cast(ValueType.NUMBER)).value;
+    }
+
+    public final String toJString() {
+        return ((WrappedString)cast(ValueType.STRING)).value;
+    }
+
+    public final WrappedValue cast(ValueType type) {
+        return cast(type, this);
+    }
+
+    public boolean equals(WrappedValue value) {
+        return false;
+    }
 }

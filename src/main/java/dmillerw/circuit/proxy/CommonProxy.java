@@ -9,6 +9,7 @@ import dmillerw.circuit.core.connection.ConnectionHandler;
 import dmillerw.circuit.core.connection.UpdateHandler;
 import dmillerw.circuit.core.handler.WorldEventHandler;
 import dmillerw.circuit.gate.arithmatic.GateAdd;
+import dmillerw.circuit.gate.conditional.GateEqual;
 import dmillerw.circuit.item.ModItems;
 import dmillerw.circuit.network.PacketHandler;
 import dmillerw.circuit.util.EventUtil;
@@ -25,6 +26,8 @@ public class CommonProxy {
         PacketHandler.initialize();
 
         GateRegistry.registerGate("arithmatic:add", new GateAdd());
+
+        GateRegistry.registerGate("conditional:equal", new GateEqual());
 
         EventUtil.register(ConnectionHandler.INSTANCE, EventUtil.Type.FML);
         EventUtil.register(UpdateHandler.INSTANCE, EventUtil.Type.FML);

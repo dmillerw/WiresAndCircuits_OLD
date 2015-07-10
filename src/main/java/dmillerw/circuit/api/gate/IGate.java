@@ -1,7 +1,6 @@
 package dmillerw.circuit.api.gate;
 
 import dmillerw.circuit.api.tile.IGateSocket;
-import dmillerw.circuit.api.value.ValueType;
 
 /**
  * @author dmillerw
@@ -10,8 +9,8 @@ public interface IGate {
 
     GateType getType();
 
-    ValueType[] getInputTypes();
-    ValueType[] getOutputTypes();
+    int getInputCount();
+    int getOutputCount();
 
     void tick(IGateSocket socket);
 

@@ -1,6 +1,5 @@
 package dmillerw.circuit.api.tile;
 
-import dmillerw.circuit.api.value.ValueType;
 import dmillerw.circuit.api.value.WrappedValue;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
@@ -13,8 +12,8 @@ public interface IConnectable {
     World getWorld();
     ChunkCoordinates getCoordinates();
 
-    ValueType[] getInputTypes();
-    ValueType[] getOutputTypes();
+    int getInputCount();
+    int getOutputCount();
 
     /**
      * Fires whenever a connection is established from this block to another

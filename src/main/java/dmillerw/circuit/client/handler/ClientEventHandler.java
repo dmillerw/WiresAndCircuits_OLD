@@ -38,6 +38,7 @@ public class ClientEventHandler {
                 if (index >= portCount)
                     index = 0;
             }
+            System.out.println(index);
             return 0;
         } else {
             return Mouse.getEventDWheel();
@@ -68,19 +69,22 @@ public class ClientEventHandler {
 
         MovingObjectPosition block = mc.objectMouseOver;
 
+        //TODO Selection needs an overhaul...
+        // GUI?
+
         if (block != null && block.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             TileEntity tile = mc.theWorld.getTileEntity(block.blockX, block.blockY, block.blockZ);
             if (tile != null && tile instanceof IConnectable) {
-                if (mousedOverGate != null) {
-                    if (block.blockX != mousedOverGate.blockX || block.blockY != mousedOverGate.blockY || block.blockZ != mousedOverGate.blockZ)
-                        index = 0;
-                } else {
-                    index = 0;
-                }
+//                if (mousedOverGate != null) {
+//                    if (block.blockX != mousedOverGate.blockX || block.blockY != mousedOverGate.blockY || block.blockZ != mousedOverGate.blockZ)
+//                        index = 0;
+//                } else {
+//                    index = 0;
+//                }
 
                 mousedOverGate = block;
                 initial = ItemWireTool.getTarget(player.getHeldItem()) == null;
-                portCount = initial ? ((IConnectable) tile).getInputTypes().length : ((IConnectable) tile).getOutputTypes().length;
+                portCount = initial ? ((IConnectable) tile).getInputCount() : ((IConnectable) tile).getOutputCount();
 
                 if (portCount == 0)
                     mousedOverGate = null;
@@ -125,7 +129,7 @@ public class ClientEventHandler {
             GL11.glEnable(GL11.GL_TEXTURE_2D);
 
             final FontRenderer fontRenderer = mc.fontRenderer;
-            final String str = initial ? "OUTPUT" : "INPUT";
+            final String str = initial ? "INPUT" : "OUTPUT";
             fontRenderer.drawString(str, (res.getScaledWidth() / 2) - (fontRenderer.getStringWidth(str) / 2), maxY + 10, 0x00FF00);
 
             GL11.glPushMatrix();

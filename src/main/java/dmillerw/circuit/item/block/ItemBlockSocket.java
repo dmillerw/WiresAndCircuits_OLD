@@ -53,7 +53,7 @@ public class ItemBlockSocket extends ItemBlock {
         boolean result = super.placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata);
         if (result) {
             TileSocket tileSocket = (TileSocket) world.getTileEntity(x, y, z);
-//            tileSocket.setGate(GateRegistry.getGate(stack.getTagCompound().getString("type")));
+            tileSocket.setGate(GateRegistry.getGate(stack.getTagCompound().getString("type")));
             tileSocket.markForUpdate();
         }
         return true;

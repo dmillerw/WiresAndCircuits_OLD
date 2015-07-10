@@ -1,7 +1,6 @@
 package dmillerw.circuit.tile;
 
 import dmillerw.circuit.api.tile.IConnectable;
-import dmillerw.circuit.api.value.ValueType;
 import dmillerw.circuit.api.value.WrappedValue;
 import dmillerw.circuit.tile.core.TileCoreConnectable;
 import net.minecraft.block.Block;
@@ -24,14 +23,15 @@ public class TileRedstoneAdapter extends TileCoreConnectable implements IConnect
         }
     }
 
-    /* ICONNECTABLE */
     @Override
-    public ValueType[] getInputTypes() {
-        return new ValueType[0];
+    public int getInputCount() {
+        return 0;
     }
 
     @Override
-    public ValueType[] getOutputTypes() {
-        return new ValueType[] {ValueType.NUMBER};
+    public int getOutputCount() {
+        return 1;
     }
+
+    /* ICONNECTABLE */
 }

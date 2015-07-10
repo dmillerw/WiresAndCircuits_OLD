@@ -1,4 +1,4 @@
-package dmillerw.circuit.gate.arithmatic;
+package dmillerw.circuit.gate.conditional;
 
 import dmillerw.circuit.api.gate.GateType;
 import dmillerw.circuit.api.gate.IGate;
@@ -8,11 +8,11 @@ import dmillerw.circuit.api.value.WrappedValue;
 /**
  * @author dmillerw
  */
-public class GateAdd implements IGate {
+public class GateEqual implements IGate {
 
     @Override
     public GateType getType() {
-        return GateType.ADD;
+        return GateType.EQUAL;
     }
 
     @Override
@@ -32,6 +32,6 @@ public class GateAdd implements IGate {
 
     @Override
     public void onInputUpdate(IGateSocket socket, int index) {
-        socket.setOutput(0, WrappedValue.valueOf(socket.getInput(0).toNumber() + socket.getInput(1).toNumber()));
+        socket.setOutput(0, WrappedValue.valueOf(socket.getInput(0).equals(socket.getInput(1))));
     }
 }
