@@ -2,7 +2,6 @@ package dmillerw.circuit.api.util;
 
 import dmillerw.circuit.api.tile.IConnectable;
 import dmillerw.circuit.api.tile.IStateHandler;
-import dmillerw.circuit.core.connection.StateHandler;
 
 import java.lang.reflect.Constructor;
 
@@ -19,8 +18,8 @@ public class APIHelper {
 
     public static IStateHandler getStateHandler(IConnectable connectable) {
         try {
-            Class<StateHandler> cls = StateHandler.class;
-            Constructor constructor = cls.getConstructor(IConnectable.class);
+            Class<?> cls = Class.forName("dmillerw.circuit.core.connection.StateHandler");
+            Constructor<?> constructor = cls.getConstructor(IConnectable.class);
             return (IStateHandler) constructor.newInstance(connectable);
         } catch (Exception ex) {
             return null;
