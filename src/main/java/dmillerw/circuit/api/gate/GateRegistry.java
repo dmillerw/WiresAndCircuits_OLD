@@ -1,21 +1,35 @@
 package dmillerw.circuit.api.gate;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * @author dmillerw
  */
 public class GateRegistry {
 
-    public static final Map<String, IGate> gateRegistry = Maps.newHashMap();
+    public static GateRegistry INSTANCE;
 
-    public static void registerGate(String identifier, IGate gate) {
-        gateRegistry.put(identifier, gate); // TODO sanity
+    private final BiMap<String, Gate> gateMapping = HashBiMap.create();
+
+    public void registerGate(String ident, Gate gate) {
+        if (gateMapping.containsKey(ident))
+            throw new IllegalArgumentException("Gate already exists with the name " + ident);
+
+        gateMapping.put(ident, gate);
     }
 
-    public static IGate getGate(String identifier) {
-        return gateRegistry.get(identifier);
+    public Gate getGate(String ident) {
+        return gateMapping.get(ident);
+    }
+
+    public String getGateName(Gate gate) {
+        return gateMapping.inverse().get(gate);
+    }
+
+    public Collection<String> getAllGates() {
+        return gateMapping.keySet();
     }
 }

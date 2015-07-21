@@ -3,8 +3,10 @@ package dmillerw.circuit.api.gate;
 /**
  * @author dmillerw
  */
-public enum GateCategory {
+public enum Tier {
 
-    ARITHMATIC,
-    CONDITIONAL
+    REDSTONE,
+    IRON,
+    GOLD,
+    DIAMOND
 }

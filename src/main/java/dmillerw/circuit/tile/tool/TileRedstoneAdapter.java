@@ -1,14 +1,13 @@
-package dmillerw.circuit.tile;
+package dmillerw.circuit.tile.tool;
 
-import dmillerw.circuit.api.tile.IConnectable;
 import dmillerw.circuit.api.value.WrappedValue;
-import dmillerw.circuit.tile.core.TileCoreConnectable;
+import dmillerw.circuit.tile.core.TileConnectable;
 import net.minecraft.block.Block;
 
 /**
  * @author dmillerw
  */
-public class TileRedstoneAdapter extends TileCoreConnectable implements IConnectable {
+public class TileRedstoneAdapter extends TileConnectable {
 
     private int lastRedstone = -1;
 
@@ -16,13 +15,17 @@ public class TileRedstoneAdapter extends TileCoreConnectable implements IConnect
     public void onNeighborUpdate(Block neighbor) {
         if (!worldObj.isRemote) {
             int redstone = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord) ? 15 : 0;
-            if (lastRedstone != redstone) {
+            if (redstone != lastRedstone) {
                 lastRedstone = redstone;
-                setOutput(0, WrappedValue.valueOf(lastRedstone));
+
+                System.out.println("UPDATE");
+
+                getStateHandler().setOutput(0, WrappedValue.valueOf(lastRedstone));
             }
         }
     }
 
+    /* ICONNECTABLE */
     @Override
     public int getInputCount() {
         return 0;
@@ -33,5 +36,8 @@ public class TileRedstoneAdapter extends TileCoreConnectable implements IConnect
         return 1;
     }
 
-    /* ICONNECTABLE */
+    @Override
+    public void onStateUpdate(int[] dirtyPorts) {
+
+    }
 }

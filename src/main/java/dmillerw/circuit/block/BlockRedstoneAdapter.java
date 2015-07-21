@@ -1,7 +1,7 @@
 package dmillerw.circuit.block;
 
 import dmillerw.circuit.tile.core.TileCore;
-import dmillerw.circuit.tile.TileRedstoneAdapter;
+import dmillerw.circuit.tile.tool.TileRedstoneAdapter;
 import net.minecraft.block.material.Material;
 
 /**

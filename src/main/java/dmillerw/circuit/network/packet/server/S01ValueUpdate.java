@@ -26,7 +26,7 @@ public class S01ValueUpdate extends BasePacket {
         packet.updateType = 0;
         packet.target = coordinates;
         packet.targetPort = port;
-        packet.value = connectable.getInput(port);
+        packet.value = connectable.getStateHandler().getInput(port);
 
         PacketHandler.sendToAllWatching(chunk, packet);
     }
@@ -39,7 +39,7 @@ public class S01ValueUpdate extends BasePacket {
         packet.updateType = 1;
         packet.target = coordinates;
         packet.targetPort = port;
-        packet.value = connectable.getOutput(port);
+        packet.value = connectable.getStateHandler().getOutput(port);
 
         PacketHandler.sendToAllWatching(chunk, packet);
     }
@@ -85,9 +85,10 @@ public class S01ValueUpdate extends BasePacket {
                     message.target.posZ);
 
             if (message.updateType == 0) {
-                connectable.setInput(message.targetPort, message.value);
+                connectable.getStateHandler().setInput(message.targetPort, message.value);
+//                connectable.getStateHandler().markDirty();
             } else {
-                connectable.setOutput(message.targetPort, message.value);
+                connectable.getStateHandler().setOutput(message.targetPort, message.value);
             }
         }
     }

@@ -1,7 +1,7 @@
 package dmillerw.circuit.block;
 
 import dmillerw.circuit.tile.core.TileCore;
-import dmillerw.circuit.tile.TileDebug;
+import dmillerw.circuit.tile.tool.TileDebug;
 import net.minecraft.block.material.Material;
 
 /**

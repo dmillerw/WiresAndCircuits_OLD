@@ -1,8 +1,8 @@
 package dmillerw.circuit.item.block;
 
+import dmillerw.circuit.api.gate.Gate;
 import dmillerw.circuit.api.gate.GateRegistry;
-import dmillerw.circuit.api.gate.IGate;
-import dmillerw.circuit.tile.TileSocket;
+import dmillerw.circuit.tile.tool.TileGateSocket;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,9 +17,9 @@ import java.util.List;
 /**
  * @author dmillerw
  */
-public class ItemBlockSocket extends ItemBlock {
+public class ItemBlockGateSocket extends ItemBlock {
 
-    public ItemBlockSocket(Block block) {
+    public ItemBlockGateSocket(Block block) {
         super(block);
 
         setMaxDamage(0);
@@ -32,14 +32,13 @@ public class ItemBlockSocket extends ItemBlock {
     @Override
     public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean debug) {
         String type = itemStack.getTagCompound().getString("type");
-        IGate gate = GateRegistry.getGate(type);
-        list.add("CATEGORY: " + gate.getType().category);
-        list.add("TYPE: " + gate.getType());
+        Gate gate = GateRegistry.INSTANCE.getGate(type);
+        list.add("Gate - " + gate.getCategory() + ": " + type);
     }
 
     @Override
     public void getSubItems(Item item, CreativeTabs tab, List list) {
-        for (String string : GateRegistry.gateRegistry.keySet()) {
+        for (String string : GateRegistry.INSTANCE.getAllGates()) {
             ItemStack stack = new ItemStack(this, 1, 0);
             NBTTagCompound tag = new NBTTagCompound();
             tag.setString("type", string);
@@ -52,9 +51,9 @@ public class ItemBlockSocket extends ItemBlock {
     public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int metadata) {
         boolean result = super.placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata);
         if (result) {
-            TileSocket tileSocket = (TileSocket) world.getTileEntity(x, y, z);
-            tileSocket.setGate(GateRegistry.getGate(stack.getTagCompound().getString("type")));
-            tileSocket.markForUpdate();
+            TileGateSocket tile = (TileGateSocket) world.getTileEntity(x, y, z);
+            tile.setGate(GateRegistry.INSTANCE.getGate(stack.getTagCompound().getString("type")));
+            tile.markForUpdate();
         }
         return true;
     }

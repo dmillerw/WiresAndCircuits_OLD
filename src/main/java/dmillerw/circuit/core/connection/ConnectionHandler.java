@@ -3,6 +3,8 @@ package dmillerw.circuit.core.connection;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import dmillerw.circuit.api.tile.IConnectable;
+import dmillerw.circuit.core.update.SingleUpdate;
+import dmillerw.circuit.core.update.UpdateHandler;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
@@ -64,10 +66,6 @@ public class ConnectionHandler {
             if (connection.target.equals(check.target)) {
                 // ... and the same port ...
                 if (connection.targetInputPort == check.targetInputPort) {
-                    //TODO Do we reset the values when the block is removed? or just allow the target to keep the last known value
-//                    IConnectable connectable = (IConnectable) world.getTileEntity(connection.target.posX, connection.target.posY, connection.target.posZ);
-//                    connectable.onConnectionRemoved(connection.targetInputPort);
-
                     // ... we remove it
                     iterator.remove();
                 }
@@ -85,17 +83,20 @@ public class ConnectionHandler {
 
         if (update) {
             IConnectable connectable = (IConnectable) world.getTileEntity(self.posX, self.posY, self.posZ);
-            connectable.onConnectionEstablished(connection.target, connection.selfOutputPort);
+            UpdateHandler.INSTANCE.queueUpdate(
+                    new SingleUpdate(
+                            world.provider.dimensionId,
+                            connection.target,
+                            connection.targetInputPort,
+                            connectable.getStateHandler().getOutput(connection.selfOutputPort)
+                    )
+            );
         }
     }
 
     public void removeConnection(World world, ChunkCoordinates coordinates) {
         // First, remove any connections that originate from this point
-        for (Connection connection : get(world).removeAll(coordinates)) {
-            //TODO Do we reset the values when the block is removed? or just allow the target to keep the last known value
-//            IConnectable connectable = (IConnectable) world.getTileEntity(connection.target.posX, connection.target.posY, connection.target.posZ);
-//            connectable.onConnectionRemoved(connection.targetInputPort);
-        }
+        get(world).removeAll(coordinates);
 
         // Then remove any connections that lead to this point
         for (Iterator<Map.Entry<ChunkCoordinates, Connection>> iterator = get(world).entries().iterator(); iterator.hasNext(); ) {
